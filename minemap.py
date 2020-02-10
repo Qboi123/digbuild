@@ -9,7 +9,7 @@ class MineMap():
 
 	def loadMapString(self, data):
 		cellMap = "0123456789abcdefghijklmnopqrstuvwxyz"
-		print "// Parsing"
+		print("// Parsing")
 		layers = data.split('\n\n')
 		settings = layers[0].split('\n')
 		self.map = [[[cellMap.find(cell) for cell in split_len(row,1)] for row in layer.split('\n')] for layer in layers[1:]]
@@ -18,10 +18,10 @@ class MineMap():
 		# removes last layer if its empty, and only then
 		if len(self.map) == self.resolution[2] + 1:
 			if len(self.map[::-1][0]) == 1:
-				if  len(self.map[::-1][0][0]) == 0:
+				if len(self.map[::-1][0][0]) == 0:
 					self.map = self.map[:-1]
-		
-		print "// Validating"
+
+		print("// Validating")
 		if len(self.map) == self.resolution[2]:
 			for z in range(self.resolution[2]):
 				if len(self.map[z]) == self.resolution[1]:
@@ -36,7 +36,7 @@ class MineMap():
 		self.quadrateMap()
 		
 	def quadrateMap(self):
-		print "// Quadrating"
+		print("// Quadrating")
 		self.quads = []
 		for z in range(-1, self.resolution[2]+1):
 			for y in range(-1, self.resolution[1]+1):

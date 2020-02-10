@@ -6,14 +6,18 @@
 
 #TODO: if you walk at a very perfect 45 towards a corner, you can enter a block!
 
-import os, random
-from string import split
+import os
 from math import sin, cos, trunc
+
+from pyglet.canvas import Display, get_display
 from pyglet.gl import *
-from pyglet import window
 from pyglet import image
+from pyglet.image import ImageData
+from pyglet.text import Label
 from pyglet.window import key
 import pyglet.clock
+
+split = str.split
 
 from minemap import MineMap
 
@@ -21,8 +25,7 @@ piover180 = 0.0174532925
 
 class MineWindow(object):
 	def __init__(self):
-		platform = pyglet.window.get_platform()
-		display = platform.get_default_display()
+		display = get_display()
 		screen = display.get_default_screen()
 
 		template = pyglet.gl.Config(alpha_size=8)
@@ -39,6 +42,8 @@ class MineWindow(object):
 		self.ypos = 1.5
 
 		self.lookupdown = 0.5
+
+		self.mine_map = None
 
 		self.LightAmbient  = (GLfloat*4)(0.5, 0.5, 0.5, 1.0)
 		self.LightDiffuse  = (GLfloat*4)(1.0, 1.0, 1.0, 1.0)
@@ -108,10 +113,10 @@ class MineWindow(object):
 	def loadTextures(self):
 		for i in range(6):
 			texturefile = os.path.join('data', str(i) + '.png')
-			print "Loading:", texturefile
-			textureSurface = image.load(texturefile)
+			print("Loading:", texturefile)
+			textureSurface: ImageData = image.load(texturefile)
 		
-			gl_texture = textureSurface.mipmapped_texture
+			gl_texture = textureSurface.get_mipmapped_texture()
 			glBindTexture(GL_TEXTURE_2D, gl_texture.id)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
@@ -120,8 +125,8 @@ class MineWindow(object):
 
 	def worldInit(self):
 		self.mine_map = MineMap('minemap.txt')
-		print len(self.mine_map.quads)
-			
+		print(len(self.mine_map.quads))
+
 	def eventInit(self):
 		self.window.on_resize = self.on_resize
 		self.window.on_key_press = self.on_key_press
@@ -246,17 +251,18 @@ class MineWindow(object):
 		self.window.set_exclusive_mouse(True)
 
 		clock = pyglet.clock.Clock()
-		fps_display = pyglet.clock.ClockDisplay()
+		fps_display = Label(x=0, y=0, anchor_y="top", font_size=14)
 		while not self.window.has_exit:
 			self.window.dispatch_events()
 			self.updateFrame()
+			fps_display.text = f"FPS: {pyglet.clock.get_fps()}"
 			fps_display.draw()
 			self.draw()
 			self.window.flip()
 			
 			dt = clock.tick()
 
-		print "fps:  %d" % clock.get_fps()
+		print("fps:  %d" % clock.get_fps())
 
 
 def main():
